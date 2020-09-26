@@ -1,8 +1,6 @@
 package facades;
 
 import dto.PersonDTO;
-import dto.PersonsDTO;
-import entities.Address;
 import entities.Person;
 import interfaces.IPersonFacade;
 
@@ -41,7 +39,6 @@ public class PersonFacade implements IPersonFacade {
     public PersonDTO addPerson(PersonDTO personDTO) {
         EntityManager em = emf.createEntityManager();
         Person newPerson = new Person(personDTO);
-        newPerson.getAddress().setPerson(newPerson);
 
         try {
             em.getTransaction().begin();
@@ -62,15 +59,13 @@ public class PersonFacade implements IPersonFacade {
         try {
             Person person = em.find(Person.class, id);
             PersonDTO personDTO = new PersonDTO(person);
-            Address address = em.find(Address.class, person.getAddress().getId());
 
             em.getTransaction().begin();
             em.remove(person);
-            em.remove(address);
             em.getTransaction().commit();
 
             return personDTO;
-
+ 
         } finally {
             em.close();
         }
@@ -89,18 +84,6 @@ public class PersonFacade implements IPersonFacade {
     }
 
     @Override
-    public PersonsDTO getAllPersons() {
-        EntityManager em = emf.createEntityManager();
-
-        try {
-            TypedQuery<Person> query = em.createNamedQuery("Person.getAll", Person.class);
-            return new PersonsDTO(query.getResultList());
-        } finally {
-            em.close();
-        }
-    }
-
-    @Override
     public PersonDTO editPerson(PersonDTO p) {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, p.getId());
@@ -113,10 +96,6 @@ public class PersonFacade implements IPersonFacade {
         person.setPhone(p.getPhone());
         person.setLastEdited(new Date());
 
-        person.getAddress().setStreet(p.getStreet());
-        person.getAddress().setCity(p.getCity());
-        person.getAddress().setZip(p.getZip());
-
         try {
             em.getTransaction().begin();
             em.merge(person);
@@ -127,5 +106,4 @@ public class PersonFacade implements IPersonFacade {
 
         return new PersonDTO(person);
     }
-
 }

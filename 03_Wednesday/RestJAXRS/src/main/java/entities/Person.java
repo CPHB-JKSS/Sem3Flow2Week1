@@ -38,9 +38,6 @@ public class Person implements Serializable {
         this.phone = personDTO.getPhone();
     }
     
-    
-    
-    
     public int getId() {
         return id;
     }
